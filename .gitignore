@@ -1,0 +1,7 @@
+.DS_Store
+node_modules/
+*.log
+
+# Skill output — generated reports go in each consumer project's .bench/ dir,
+# but ignore here too in case anyone runs the skill in this repo for testing.
+.bench/

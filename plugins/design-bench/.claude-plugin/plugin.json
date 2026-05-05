@@ -1,0 +1,12 @@
+{
+  "name": "design-bench",
+  "description": "Evidence-based UI/UX benchmarking skill. Identifies competitors from a curated KR/Global seed, gathers references via WebSearch / WebFetch / Figma MCP, maps the project's internal design system, and produces a structured report with ASCII wireframes and PR-split guidance.",
+  "version": "0.1.0",
+  "author": {
+    "name": "hx2ryu",
+    "email": "hx2ryu@gmail.com"
+  },
+  "homepage": "https://github.com/hx2ryu/zachplace",
+  "repository": "https://github.com/hx2ryu/zachplace",
+  "license": "MIT"
+}

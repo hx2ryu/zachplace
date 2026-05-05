@@ -1,0 +1,21 @@
+{
+  "name": "zachplace",
+  "owner": {
+    "name": "hx2ryu",
+    "email": "hx2ryu@gmail.com"
+  },
+  "metadata": {
+    "description": "zachplace's personal Claude Code plugin marketplace. Curated skills for design research, internal product workflows, and team-shared automation."
+  },
+  "plugins": [
+    {
+      "name": "design-bench",
+      "source": "./plugins/design-bench",
+      "description": "Evidence-backed UI/UX benchmarking. Identifies competitors from a curated KR/Global seed, gathers references, maps the project's internal design system, and produces a structured report with ASCII wireframes and PR-split guidance.",
+      "author": {
+        "name": "hx2ryu",
+        "email": "hx2ryu@gmail.com"
+      }
+    }
+  ]
+}
