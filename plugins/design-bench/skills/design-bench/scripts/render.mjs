@@ -42,7 +42,8 @@ try {
     const outputPath = resolve(OUTPUT_DIR, outName);
 
     const html = await readFile(inputPath, 'utf8');
-    const platformMatch = html.match(/data-platform=["'](mobile|desktop)["']/);
+    const stripped = html.replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '');
+    const platformMatch = stripped.match(/data-platform=["'](mobile|desktop)["']/);
     const platform = platformMatch ? platformMatch[1] : 'desktop';
     const width = platform === 'mobile' ? 375 : 1280;
 
