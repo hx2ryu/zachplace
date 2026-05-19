@@ -27,7 +27,7 @@ assert_eq() {
 
 assert_contains() {
   local haystack="$1" needle="$2"
-  if echo "$haystack" | grep -qF "$needle"; then
+  if echo "$haystack" | grep -qF -- "$needle"; then
     TESTS_PASSED=$((TESTS_PASSED + 1))
   else
     TESTS_FAILED=$((TESTS_FAILED + 1))
