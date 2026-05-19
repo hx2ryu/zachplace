@@ -30,7 +30,7 @@ Install the plugin:
 claude plugin install design-bench@zachplace
 ```
 
-After install, every project can call `/design-bench:design-bench`. Auto-trigger phrases live in the [`SKILL.md`](./skills/design-bench/SKILL.md) description.
+After install, every project can call `/design-bench:research`. Auto-trigger phrases live in the [`SKILL.md`](./skills/research/SKILL.md) description.
 
 ## Per-project config (optional)
 
@@ -88,7 +88,7 @@ Add `.bench/` to your project `.gitignore` (large + personal).
 
 ## Contributing to the seeds
 
-PR against `skills/design-bench/references/competitors-{kr,global}.md`.
+PR against `skills/research/references/competitors-{kr,global}.md`.
 
 Acceptance bar:
 
