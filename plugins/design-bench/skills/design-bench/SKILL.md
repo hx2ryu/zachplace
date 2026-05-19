@@ -326,13 +326,17 @@ Every mockup HTML file must satisfy:
 
 1. **Top wrapper** — `<div class="mockup-frame" data-platform="mobile|desktop">`.
    `data-platform` drives the renderer's viewport (375 or 1280).
-2. **Tokens only** — colors, spacing, radii, fonts use `var(--token-name)`.
+2. **`box-sizing: border-box` globally** — apply
+   `*, *::before, *::after { box-sizing: border-box; }` so padding stays
+   inside the fixed wrapper width. Without this, mobile mockups
+   (`375px + padding`) overflow the iframe and clip on the right edge.
+3. **Tokens only** — colors, spacing, radii, fonts use `var(--token-name)`.
    No raw hex (`#abc123`) anywhere in the file.
-3. **No external assets** — no `<link>`, no `<script src=>`, no
+4. **No external assets** — no `<link>`, no `<script src=>`, no
    `<img src="http...">`. Inline SVG and `data:` URIs are OK.
-4. **Self-contained** — inline `<style>` block at top. `design-tokens.css`
+5. **Self-contained** — inline `<style>` block at top. `design-tokens.css`
    is inlined into the iframe srcdoc separately by step 9.
-5. **Semantic HTML** — prefer `<button>`, `<nav>`, `<section>` over
+6. **Semantic HTML** — prefer `<button>`, `<nav>`, `<section>` over
    styled `<div>` soup.
 
 Validation before render: grep each generated HTML file for

@@ -8,11 +8,14 @@ recommendation's specific content.
 
 1. Top-level wrapper: `<div class="mockup-frame" data-platform="mobile|desktop">`
 2. Width is fixed by platform: mobile = 375px, desktop = 1280px.
-3. All colors, spacing, radii, fonts go through CSS variables:
+3. **`box-sizing: border-box`** on the wrapper — so `padding` is included
+   inside the fixed width and the mockup never exceeds the viewport. Apply
+   `box-sizing: border-box` globally via `*, *::before, *::after`.
+4. All colors, spacing, radii, fonts go through CSS variables:
    `var(--color-primary)`, `var(--space-4)`, etc.
-4. No raw hex (`#fff`), no external assets (`<img src="https://...">`),
+5. No raw hex (`#fff`), no external assets (`<img src="https://...">`),
    no external CSS/JS.
-5. Inline `<style>` block at top is OK. `design-tokens.css` is loaded
+6. Inline `<style>` block at top is OK. `design-tokens.css` is loaded
    automatically by the wrapper context.
 
 ---
@@ -23,6 +26,7 @@ recommendation's specific content.
 <!doctype html>
 <html><head><meta charset="utf-8">
 <style>
+  *, *::before, *::after { box-sizing: border-box; }
   body { margin: 0; font-family: var(--font-sans); color: var(--color-fg); background: var(--color-bg); }
   .mockup-frame { width: 1280px; padding: var(--space-8); }
   .tier-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-4); }
@@ -49,6 +53,7 @@ recommendation's specific content.
 <!doctype html>
 <html><head><meta charset="utf-8">
 <style>
+  *, *::before, *::after { box-sizing: border-box; }
   body { margin: 0; font-family: var(--font-sans); color: var(--color-fg); background: var(--color-bg); }
   .mockup-frame { width: 375px; padding: var(--space-4); }
   .progress { display: flex; gap: var(--space-1); margin-bottom: var(--space-8); }
@@ -78,6 +83,7 @@ recommendation's specific content.
 <!doctype html>
 <html><head><meta charset="utf-8">
 <style>
+  *, *::before, *::after { box-sizing: border-box; }
   body { margin: 0; font-family: var(--font-sans); color: var(--color-fg); background: var(--color-bg); }
   .mockup-frame { width: 375px; padding: var(--space-4); }
   .empty { text-align: center; padding: var(--space-8) 0; }
@@ -104,6 +110,7 @@ recommendation's specific content.
 <!doctype html>
 <html><head><meta charset="utf-8">
 <style>
+  *, *::before, *::after { box-sizing: border-box; }
   body { margin: 0; font-family: var(--font-sans); color: var(--color-fg); background: var(--color-bg); }
   .mockup-frame { width: 1280px; padding: var(--space-4); }
   .card { border: 1px solid var(--color-border); border-radius: var(--radius-md); padding: var(--space-4); max-width: 320px; }
