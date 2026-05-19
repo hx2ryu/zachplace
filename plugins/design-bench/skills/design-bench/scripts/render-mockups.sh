@@ -23,10 +23,14 @@ OUTPUT_DIR="${2:-}"
 
 [ -d "$INPUT_DIR" ] || {
   echo "RENDER_FAILED input_dir_missing: $INPUT_DIR" >&2
+  echo "RENDER_FAILED input_dir_missing: $INPUT_DIR"
   exit 1
 }
 
 mkdir -p "$OUTPUT_DIR"
+
+# Clear stale PNGs from any previous run
+find "$OUTPUT_DIR" -maxdepth 1 -name '*.png' -delete 2>/dev/null || true
 
 # Resolve script directory so puppeteer can be resolved from local node_modules
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
@@ -60,10 +64,14 @@ if [ -n "$LB" ]; then
     [ "$platform" = "mobile" ] && width=375
 
     "$LB" goto "file://$html" >/dev/null 2>&1 || {
-      echo "RENDER_FAILED gstack_goto_failed: $html" >&2; exit 1;
+      echo "RENDER_FAILED gstack_goto_failed: $html" >&2
+      echo "RENDER_FAILED gstack_goto_failed: $html"
+      exit 1
     }
-    "$LB" screenshot "$out" --width "$width" >/dev/null 2>&1 || {
-      echo "RENDER_FAILED gstack_screenshot_failed: $out" >&2; exit 1;
+    "$LB" screenshot "$out" --viewport "${width}x900" >/dev/null 2>&1 || {
+      echo "RENDER_FAILED gstack_screenshot_failed: $out" >&2
+      echo "RENDER_FAILED gstack_screenshot_failed: $out"
+      exit 1
     }
     count=$((count + 1))
   done
@@ -72,17 +80,20 @@ else
   RENDER_MJS="$SCRIPT_DIR/render.mjs"
   if ! command -v node >/dev/null 2>&1; then
     echo "RENDER_SKIPPED no_headless_browser_and_no_node" >&2
+    echo "RENDER_SKIPPED no_headless_browser_and_no_node"
     exit 1
   fi
   if ! (cd "$SCRIPT_DIR" && node -e "require.resolve('puppeteer')") >/dev/null 2>&1; then
     echo "Installing puppeteer (one-time, ~200MB Chrome download)..." >&2
-    if ! npx -y puppeteer@latest --version >/dev/null 2>&1; then
+    if ! (cd "$SCRIPT_DIR" && npm install --silent) >/dev/null 2>&1; then
       echo "RENDER_FAILED puppeteer_install_failed" >&2
+      echo "RENDER_FAILED puppeteer_install_failed"
       exit 1
     fi
   fi
   (cd "$SCRIPT_DIR" && node "$RENDER_MJS" "$INPUT_DIR" "$OUTPUT_DIR") || {
     echo "RENDER_FAILED render_mjs_failed" >&2
+    echo "RENDER_FAILED render_mjs_failed"
     exit 1
   }
   count="$(find "$OUTPUT_DIR" -maxdepth 1 -name '*.png' | wc -l | tr -d ' ')"

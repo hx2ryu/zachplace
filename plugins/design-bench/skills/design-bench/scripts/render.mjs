@@ -34,7 +34,7 @@ if (files.length === 0) {
   process.exit(0);
 }
 
-const browser = await puppeteer.launch({ headless: 'new' });
+const browser = await puppeteer.launch({ headless: true });
 try {
   for (const file of files) {
     const inputPath = resolve(INPUT_DIR, file);
