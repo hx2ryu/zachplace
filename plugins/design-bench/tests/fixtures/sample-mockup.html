@@ -1,0 +1,19 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  :root { --color-primary: #2563eb; --color-fg: #0f172a; }
+  body { margin: 0; font-family: system-ui, sans-serif; }
+  .mockup-frame { width: 375px; padding: 16px; color: var(--color-fg); }
+  .mockup-frame[data-platform="desktop"] { width: 1280px; }
+  button { background: var(--color-primary); color: white; padding: 8px 16px; border: none; border-radius: 8px; }
+</style>
+</head>
+<body>
+  <div class="mockup-frame" data-platform="mobile">
+    <h1>Sample</h1>
+    <button>Click me</button>
+  </div>
+</body>
+</html>

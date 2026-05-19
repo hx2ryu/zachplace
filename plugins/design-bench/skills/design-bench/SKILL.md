@@ -189,6 +189,29 @@ is large (>50 components):
 
 Save the inventory to `{OUTPUT_DIR}/internal-inventory.md`.
 
+### 5b. Extract Design Tokens ★ (powers the mockup renderer)
+
+Run `scripts/extract-tokens.sh` against each `design_system.packages[].path`
+or the `design_system.tokens` path from config:
+
+```bash
+bash "$(dirname "$0")/scripts/extract-tokens.sh" \
+  --search "{tokens or first package path}" \
+  --out "{OUTPUT_DIR}/design-tokens.css"
+```
+
+The script tries these sources in order, picking the first that hits:
+1. `:root { --... }` blocks in any `.css` file
+2. `theme.extend` in `tailwind.config.{js,ts}`
+3. `tokens.json` or `design-tokens.json`
+4. Neutral default palette (emits `TOKENS_NOT_FOUND` on stderr)
+
+Capture stderr — if it contains `TOKENS_NOT_FOUND`, set the
+render-status badge to `⚠ neutral defaults` in the report footer.
+
+The generated `design-tokens.css` is consumed by mockup HTML files in
+step 7 and inlined into `report.html` in step 9.
+
 ### 6. Extract Patterns / Anti-Patterns
 
 From the references gathered:
@@ -201,37 +224,91 @@ From the references gathered:
 Each recommendation MUST include:
 - **What to do** (specific, implementable)
 - **Why** (tied to evidence — cite which references inspired it)
-- **ASCII wireframe** (box-drawing characters, just enough to communicate layout)
+- **HTML mockup** — see "Mockup Contract" below. One mockup per declared
+  platform (mobile=375px, desktop=1280px). Save each to
+  `{OUTPUT_DIR}/mockups/_src/rec-{n}-{mobile|desktop}.html`.
+  For each pattern/anti-pattern, also generate a mini-mockup to
+  `mockups/_src/pattern-{slug}.html` or `mockups/_src/anti-{slug}.html`.
 - **Internal mapping** ★ — which existing components from step 5 to use
   (e.g. "Use `ui/src/components/Card` + new `PriceToggle` primitive")
 - **PR split suggestion** ★ — recommended PR breakdown
   (e.g. "PR1: PriceToggle primitive; PR2: pricing page composition; PR3: A/B test wiring")
 
-Example ASCII wireframe:
+Example mockup HTML structure — see `references/mockup-examples.md` for
+4 reference patterns with full code:
+
+```html
+<!doctype html>
+<html><head><meta charset="utf-8"><style>
+  body { margin: 0; font-family: var(--font-sans); color: var(--color-fg); }
+  .mockup-frame { width: 1280px; padding: var(--space-4); }
+  /* ... only var(--token) usage, never raw hex ... */
+</style></head><body>
+  <div class="mockup-frame" data-platform="desktop">
+    <!-- composition using design tokens -->
+  </div>
+</body></html>
 ```
-┌─────────────────────────────┐
-│  Logo            [Sign In]  │
-├─────────────────────────────┤
-│   ◉ Monthly  ○ Annual       │
-│                             │
-│   ┌─────┐ ┌─────┐ ┌─────┐  │
-│   │ Free│ │ Pro │ │ Team│  │
-│   │ $0  │ │ $12 │ │ $99 │  │
-│   └──┬──┘ └──┬──┘ └──┬──┘  │
-│   [Get Started →]           │
-└─────────────────────────────┘
+
+### 8.5. Render Mockups to PNG
+
+After all mockup HTML files are saved in `{OUTPUT_DIR}/mockups/_src/`:
+
+```bash
+bash "$(dirname "$0")/scripts/render-mockups.sh" \
+  "{OUTPUT_DIR}/mockups/_src" \
+  "{OUTPUT_DIR}/mockups"
 ```
+
+The orchestrator prefers gstack/browse if `$LB` is available, otherwise
+falls back to `render.mjs` via `npx puppeteer` (first run downloads
+Chrome, ~200MB).
+
+Output contract — read the last line of stdout:
+- `RENDER_OK <n> file(s) → ...` — success, set badge to `✓ project tokens`
+  (or `⚠ neutral defaults` if step 5b emitted `TOKENS_NOT_FOUND`)
+- `RENDER_FAILED <reason>` on stderr — PNG generation failed, set badge to
+  `⚠ html-only`, leave report.md falling back to ASCII for the affected
+  blocks (write the ASCII inside a `<details>` block under the broken
+  image link so the file still renders).
+- `RENDER_SKIPPED` — same handling as RENDER_FAILED.
+
+The `_src/` directory is deleted by the orchestrator after rendering.
 
 ### 8. Write report.md
 
 Use `references/report-template.md` as the structure. Reverse-pyramid:
 TL;DR → Recommendations → Evidence → Findings.
 
+Each recommendation's `Mockups:` block uses the rendered PNGs:
+```markdown
+| Mobile | Desktop |
+|---|---|
+| ![rec-1 mobile](mockups/rec-1-mobile.png) | ![rec-1 desktop](mockups/rec-1-desktop.png) |
+```
+
+If `RENDER_FAILED`/`RENDER_SKIPPED`, fall back to ASCII inside a
+`<details>` block — the HTML mockup source is still embedded in
+report.html, so users have a path to view the design.
+
 ### 9. Generate report.html
 
 Self-contained HTML, inline CSS, max-width 900px, system fonts, light-blue
 TL;DR callout, rounded-corner image styling, relative `references/` paths.
 Do NOT depend on external CSS or JS.
+
+Inline `design-tokens.css` from step 5b inside a `<style>` block at the
+top of the document.
+
+For each recommendation's mockup, embed the HTML source via `<iframe>`:
+```html
+<iframe srcdoc="..." style="width: 100%; height: 600px; border: 1px solid #ddd; border-radius: 8px;" loading="lazy"></iframe>
+```
+
+Use the actual HTML strings from `mockups/_src/` (kept in memory before
+the orchestrator deletes them) — escape `"` as `&quot;` in the srcdoc
+attribute. The iframe's `srcdoc` content should include the inline
+design-tokens.css too (so the iframe is fully self-contained).
 
 After writing: `open "{OUTPUT_DIR}/report.html"`.
 
@@ -243,6 +320,32 @@ Tell the user:
 - Suggest: "Want me to scaffold the components for Recommendation 1?" or
   "Should I open a draft PR with the empty file structure?"
 
+## Mockup Contract (Step 7 → 8.5)
+
+Every mockup HTML file must satisfy:
+
+1. **Top wrapper** — `<div class="mockup-frame" data-platform="mobile|desktop">`.
+   `data-platform` drives the renderer's viewport (375 or 1280).
+2. **`box-sizing: border-box` globally** — apply
+   `*, *::before, *::after { box-sizing: border-box; }` so padding stays
+   inside the fixed wrapper width. Without this, mobile mockups
+   (`375px + padding`) overflow the iframe and clip on the right edge.
+3. **Tokens only** — colors, spacing, radii, fonts use `var(--token-name)`.
+   No raw hex (`#abc123`) anywhere in the file.
+4. **No external assets** — no `<link>`, no `<script src=>`, no
+   `<img src="http...">`. Inline SVG and `data:` URIs are OK.
+5. **Self-contained** — inline `<style>` block at top. `design-tokens.css`
+   is inlined into the iframe srcdoc separately by step 9.
+6. **Semantic HTML** — prefer `<button>`, `<nav>`, `<section>` over
+   styled `<div>` soup.
+
+Validation before render: grep each generated HTML file for
+`#[0-9a-fA-F]{3,8}\b` and `src=["']https?:`. If a match is found,
+self-correct once. If self-correction fails, render anyway and add a
+warning to the report.
+
+See `references/mockup-examples.md` for 4 reference patterns.
+
 ## High Bar for References (Lazyweb-style)
 
 1. The reference MUST directly illustrate the point you're making
@@ -251,12 +354,14 @@ Tell the user:
 4. Better NO image than a mismatched one
 5. Never invent a caption — describe what you actually verified
 
-## ASCII Wireframe Convention
+## ASCII Wireframe Convention (fallback only)
 
-- Box-drawing chars only: `┌─┐│└┘├┤┬┴┼`
-- One screen per block, ≤ 30 lines wide
-- Annotate interactive bits inline: `[Button]`, `◉ Selected`, `○ Unselected`
-- Don't try to render visual style — just layout and hierarchy
+ASCII is only used when PNG rendering fails (`RENDER_FAILED`/`RENDER_SKIPPED`).
+In that fallback, wrap the ASCII in a `<details>` block in report.md so
+the visual mockup in report.html remains the primary surface.
+
+Convention if you do need ASCII fallback: box-drawing chars only
+(`┌─┐│└┘├┤┬┴┼`), one screen per block, ≤ 30 lines wide.
 
 ## Quality Calibration
 
@@ -273,3 +378,5 @@ Tell the user:
 | References from very different contexts (gaming → fintech without flag) | Flag context differences explicitly in "Why this works". |
 | Forgot PR split suggestion | The user prefers PR-sized checkpoints. Without splits, the report is incomplete. |
 | Wrote findings into a plan file instead of `.bench/` | See CRITICAL: Output Behavior. The skill always produces files. |
+| Mockup contains raw hex like `#2563eb` | Use `var(--color-primary)`. The renderer accepts the file but the report loses brand fidelity. |
+| Mockup loads external CSS or images | Self-contain. External assets break iframe srcdoc rendering and inflate PNG capture latency. |
