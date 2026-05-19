@@ -4,7 +4,7 @@
 set -uo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
-EXTRACT="$ROOT/skills/design-bench/scripts/extract-tokens.sh"
+EXTRACT="$ROOT/skills/research/scripts/extract-tokens.sh"
 FIXTURES="$SCRIPT_DIR/fixtures"
 
 # shellcheck disable=SC1091

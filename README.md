@@ -28,7 +28,7 @@ zachplace/                                  ← repo (the marketplace)
 │   └── design-bench/                       ← plugin 1: self-contained
 │       ├── .claude-plugin/plugin.json
 │       ├── README.md
-│       └── skills/design-bench/
+│       └── skills/research/
 │           ├── SKILL.md
 │           ├── references/
 │           └── scripts/

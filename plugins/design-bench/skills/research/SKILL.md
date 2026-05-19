@@ -1,5 +1,5 @@
 ---
-name: design-bench
+name: research
 description: |
   Use when the user requests design research, competitive UI/UX benchmarking, or
   pre-implementation UX exploration for a new screen or feature.
@@ -127,11 +127,11 @@ right after TL;DR.
 
 **Seed grep first** — do NOT skip this:
 ```bash
-grep -A 5 "^### " plugins/design-bench/skills/design-bench/references/competitors-kr.md
-grep -A 5 "^### " plugins/design-bench/skills/design-bench/references/competitors-global.md
+grep -A 5 "^### " plugins/design-bench/skills/research/references/competitors-kr.md
+grep -A 5 "^### " plugins/design-bench/skills/research/references/competitors-global.md
 ```
 (Adjust paths — when installed as plugin, files are in
-`~/.claude/plugins/cache/.../design-bench/skills/design-bench/references/`.)
+`~/.claude/plugins/cache/.../design-bench/skills/research/references/`.)
 
 Filter by `project.category` and `project.market`, apply `competitors.override`
 and `competitors.exclude` from config.

@@ -5,7 +5,7 @@
 set -uo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
-RENDER="$ROOT/skills/design-bench/scripts/render.mjs"
+RENDER="$ROOT/skills/research/scripts/render.mjs"
 FIXTURE="$SCRIPT_DIR/fixtures/sample-mockup.html"
 
 # shellcheck disable=SC1091
