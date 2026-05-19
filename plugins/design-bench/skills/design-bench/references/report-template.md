@@ -15,7 +15,7 @@
 
 ## Recommendations
 
-Each recommendation: what + why + ASCII sketch + internal mapping + PR split.
+Each recommendation: what + why + mockup (mobile + desktop) + internal mapping + PR split.
 Ranked by impact × ease.
 
 ### 1. {Recommendation title} ⭐ (highest impact)
