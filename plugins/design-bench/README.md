@@ -1,6 +1,6 @@
 # design-bench
 
-A Lazyweb-pattern **design benchmarking skill** — the first plugin in the `zachplace` Claude Code marketplace.
+A Lazyweb-pattern **design benchmarking skill** — a plugin in the `zachplace` Claude Code and Codex marketplace.
 
 Before you design a new screen, this skill:
 
@@ -18,7 +18,7 @@ How it differs from Lazyweb:
 
 ## Installation
 
-Add the marketplace first:
+Add the Claude marketplace first:
 
 ```bash
 claude plugin marketplace add https://github.com/hx2ryu/zachplace
@@ -31,6 +31,8 @@ claude plugin install design-bench@zachplace
 ```
 
 After install, every project can call `/design-bench:research`. Auto-trigger phrases live in the [`SKILL.md`](./skills/research/SKILL.md) description.
+
+For Codex, use the Codex-compatible index at [`marketplaces/codex/marketplace.json`](../../marketplaces/codex/marketplace.json) or install the plugin directory directly. The workflow is available through the Codex skill picker or `$research`. Runtime-specific notes live in [`runtime/`](./runtime/).
 
 ## Per-project config (optional)
 
