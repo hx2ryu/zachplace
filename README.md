@@ -1,6 +1,6 @@
-# zachplace — Claude Code plugin marketplace
+# zachplace — Claude Code and Codex plugin marketplace
 
-A personal Claude Code plugin marketplace by [hx2ryu](https://github.com/hx2ryu). Curated skills for design research, internal product workflows, and team-shared automation.
+A personal Claude Code and Codex plugin marketplace by [hx2ryu](https://github.com/hx2ryu). Curated skills for design research, internal product workflows, and team-shared automation.
 
 Plugins live self-contained under `plugins/`. Once registered in the root `.claude-plugin/marketplace.json`, any plugin installs with one command: `claude plugin install <name>@zachplace`.
 
@@ -10,23 +10,35 @@ Plugins live self-contained under `plugins/`. Once registered in the root `.clau
 claude plugin marketplace add https://github.com/hx2ryu/zachplace
 ```
 
+The same plugin sources also include Codex manifests under
+`plugins/<plugin>/.codex-plugin/` and a generated Codex index at
+`marketplaces/codex/marketplace.json`. Use the Codex plugin/marketplace flow
+supported by your current Codex client, or point local development directly at
+the plugin directory.
+
 ## Catalog
 
 | Plugin | One-liner | Install | Details |
 |---|---|---|---|
 | `design-bench` | Evidence-backed UI/UX benchmarking with KR/Global competitor seeds and internal design-system mapping | `claude plugin install design-bench@zachplace` | [README](./plugins/design-bench/README.md) |
 
-To add a new plugin: append one row here, one entry in `marketplace.json`, and ship the plugin directory (see "Adding a new plugin" below).
+To add a new plugin: append one row here, add one entry to `catalog/plugins.json`, generate the indexes, and ship the plugin directory (see "Adding a new plugin" below).
 
 ## Repository layout
 
 ```
 zachplace/                                  ← repo (the marketplace)
 ├── .claude-plugin/
-│   └── marketplace.json                    ← marketplace manifest (registers all plugins)
+│   └── marketplace.json                    ← legacy Claude index (generated)
+├── catalog/
+│   └── plugins.json                         ← canonical plugin catalog
+├── marketplaces/
+│   ├── claude/marketplace.json              ← generated Claude index
+│   └── codex/marketplace.json               ← generated Codex index
 ├── plugins/
 │   └── design-bench/                       ← plugin 1: self-contained
 │       ├── .claude-plugin/plugin.json
+│       ├── .codex-plugin/plugin.json
 │       ├── README.md
 │       └── skills/research/
 │           ├── SKILL.md
@@ -42,6 +54,7 @@ zachplace/                                  ← repo (the marketplace)
    ```
    plugins/<plugin-name>/
    ├── .claude-plugin/plugin.json     ← metadata (name, description, version, author, license)
+   ├── .codex-plugin/plugin.json      ← Codex metadata for dual-runtime plugins
    ├── README.md                      ← plugin-level usage docs
    └── skills/<skill-name>/
        ├── SKILL.md
@@ -49,21 +62,33 @@ zachplace/                                  ← repo (the marketplace)
        └── scripts/                   ← optional
    ```
 
-2. **Register in `.claude-plugin/marketplace.json`** by appending to the `plugins` array:
+2. **Register in `catalog/plugins.json`** by adding a catalog entry:
    ```json
    {
      "name": "<plugin-name>",
-     "source": "./plugins/<plugin-name>",
+     "path": "plugins/<plugin-name>",
      "description": "One-line description.",
+     "version": "0.1.0",
+     "platforms": ["claude", "codex"],
      "author": { "name": "...", "email": "..." }
    }
    ```
 
-3. **Add a row to the catalog table** in this README.
+3. **Add the platform manifests** inside the plugin:
+   ```text
+   plugins/<plugin-name>/.claude-plugin/plugin.json
+   plugins/<plugin-name>/.codex-plugin/plugin.json
+   ```
 
-4. **One PR per plugin.** Bundle the marketplace metadata change with the plugin code so the manifest and plugin land atomically.
+4. **Regenerate and validate indexes:**
+   ```bash
+   bash scripts/generate-marketplaces.sh
+   bash scripts/validate-marketplace.sh
+   ```
 
-5. **Bump the plugin's `version`** ([SemVer](https://semver.org/)) on every release. Users get updates via `claude plugin update`.
+5. **One PR per plugin.** Bundle catalog, generated indexes, manifests, and plugin code so they land atomically.
+
+6. **Bump the plugin's `version`** ([SemVer](https://semver.org/)) on every release and keep both manifests synchronized.
 
 ### Authoring tips
 

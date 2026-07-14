@@ -10,7 +10,7 @@
   "plugins": [
     {
       "name": "design-bench",
-      "source": "./plugins/design-bench",
+      "source": "../../plugins/design-bench",
       "description": "Evidence-backed UI/UX benchmarking. Identifies competitors from a curated KR/Global seed, gathers references, maps the project's internal design system, and produces a structured report with HTML/CSS mockups rendered using your project's design tokens.",
       "author": {
         "name": "hx2ryu",

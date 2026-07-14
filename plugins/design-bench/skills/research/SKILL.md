@@ -9,22 +9,14 @@ description: |
   "best practices for {screen}", "how do top apps handle {feature}".
   ALWAYS use this skill when designing a new screen or major UI change before
   implementation, especially when the project has an internal design system.
-allowed-tools:
-  - Bash
-  - Read
-  - Write
-  - Glob
-  - Grep
-  - WebSearch
-  - WebFetch
-  - Agent
 ---
 
 # Design Bench
 
 Lazyweb-pattern design benchmarking. Combines curated competitor seeds, web
-research, optional Figma MCP context, and **internal design-system mapping**
-to produce an evidence-backed UI/UX recommendation report.
+research, optional browser/Figma context, and **internal design-system mapping**
+to produce an evidence-backed UI/UX recommendation report. Runtime-specific
+notes are available in `../../runtime/`.
 
 ## CRITICAL: Output Behavior
 
@@ -91,10 +83,10 @@ The skill must keep working when optional tools are missing.
 
 | Tool | Required? | Fallback if missing |
 |---|---|---|
-| `WebSearch` | yes | (none — minimum requirement) |
-| `WebFetch` | yes | (none — minimum requirement) |
-| Figma MCP (`mcp__plugin_figma_figma__*`) | optional | Skip step 4c, note in report |
-| `Context7` (`mcp__plugin_context7_context7__*`) | optional | Skip library-docs lookup |
+| Web search | yes | (none — minimum requirement) |
+| Web fetch | yes | (none — minimum requirement) |
+| Figma context | optional | Skip step 4c, note in report |
+| Library-docs lookup | optional | Skip library-docs lookup |
 | Headless browser (`gstack`/`browse`) | optional | Live screenshot capture skipped, describe in text |
 
 Verify tool presence at workflow start. Do NOT fail — degrade and proceed.
@@ -123,7 +115,7 @@ If a current implementation exists:
 Save as `{OUTPUT_DIR}/references/current-state.png`. Reference it in the report
 right after TL;DR.
 
-### 3. Identify Competitors (Seed First, WebSearch to Fill)
+### 3. Identify Competitors (Seed First, web search to fill)
 
 **Seed grep first** — do NOT skip this:
 ```bash
@@ -136,7 +128,7 @@ grep -A 5 "^### " plugins/design-bench/skills/research/references/competitors-gl
 Filter by `project.category` and `project.market`, apply `competitors.override`
 and `competitors.exclude` from config.
 
-**Then WebSearch** for any gaps (recent entrants, niche players the seed missed):
+**Then use web search** for any gaps (recent entrants, niche players the seed missed):
 - `"{category} app 2026 best UX"` — KR market: add `한국` / `Korean`
 - `"{competitor name} {screen type}"`
 
@@ -144,9 +136,9 @@ Present the final 5-10 competitor list to the user for one-shot confirmation.
 
 ### 4. Collect References
 
-#### 4a. WebSearch + WebFetch
+#### 4a. Web search + web fetch
 For each confirmed competitor, find URLs of the target screen and capture:
-- Pricing, onboarding, dashboard → public marketing page (WebFetch the HTML, describe)
+- Pricing, onboarding, dashboard → public marketing page (fetch the HTML, describe)
 - Logged-in screens → search for review/teardown articles with screenshots
 
 #### 4b. Headless browser (if available)
@@ -162,8 +154,8 @@ done
 Use `$LB goto <url>` + `$LB screenshot <path>` for live captures.
 
 #### 4c. Figma MCP (if available + Figma URL provided)
-Use `mcp__plugin_figma_figma__get_design_context` with the `fileKey` and `nodeId`
-parsed from the URL. Capture the screenshot via `get_screenshot`. Save to
+Use the available Figma capability with the `fileKey` and `nodeId` parsed from
+the URL. Capture the screenshot and save to
 `{OUTPUT_DIR}/references/figma-{nodeId}.png`.
 
 **Cap total references at 30.** Name files: `{company}-{screen-slug}.png`.

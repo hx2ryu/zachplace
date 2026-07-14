@@ -1,21 +1,20 @@
 {
-  "name": "zachplace",
-  "owner": {
-    "name": "hx2ryu",
-    "email": "hx2ryu@gmail.com"
-  },
-  "metadata": {
+  "marketplace": {
+    "name": "zachplace",
+    "owner": { "name": "hx2ryu", "email": "hx2ryu@gmail.com" },
     "description": "Curated plugins and skills for Claude Code and Codex."
   },
   "plugins": [
     {
       "name": "design-bench",
-      "source": "./plugins/design-bench",
+      "path": "plugins/design-bench",
       "description": "Evidence-backed UI/UX benchmarking. Identifies competitors from a curated KR/Global seed, gathers references, maps the project's internal design system, and produces a structured report with HTML/CSS mockups rendered using your project's design tokens.",
-      "author": {
-        "name": "hx2ryu",
-        "email": "hx2ryu@gmail.com"
-      }
+      "version": "0.2.0",
+      "platforms": ["claude", "codex"],
+      "author": { "name": "hx2ryu", "email": "hx2ryu@gmail.com" },
+      "license": "MIT",
+      "homepage": "https://github.com/hx2ryu/zachplace",
+      "repository": "https://github.com/hx2ryu/zachplace"
     }
   ]
 }
